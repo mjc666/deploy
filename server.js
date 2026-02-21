@@ -10,6 +10,7 @@ const config = require('./config.json');
 
 const app = express();
 const PORT = process.env.PORT || 9000;
+const HOST = process.env.HOST || '127.0.0.1';
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET;
 
 const logsDir = path.join(__dirname, 'logs');
@@ -18,7 +19,10 @@ if (!fs.existsSync(logsDir)) {
 }
 
 function verifySignature(payload, signature) {
-  if (!WEBHOOK_SECRET) return true;
+  if (!WEBHOOK_SECRET) {
+    console.error('WEBHOOK_SECRET is not set - rejecting all webhooks');
+    return false;
+  }
   if (!signature) return false;
 
   const expected = 'sha256=' + crypto
@@ -101,7 +105,7 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Deploy server listening on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`Deploy server listening on ${HOST}:${PORT}`);
   console.log(`Configured projects: ${Object.keys(config.projects).join(', ')}`);
 });

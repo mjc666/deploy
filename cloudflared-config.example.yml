@@ -1,0 +1,15 @@
+# Cloudflare Tunnel configuration
+# Copy to ~/.cloudflared/config.yml and fill in your values
+#
+# Setup:
+#   cloudflared tunnel login
+#   cloudflared tunnel create deploy-webhook
+#   cloudflared tunnel route dns deploy-webhook deploy.yourdomain.com
+
+tunnel: YOUR_TUNNEL_UUID
+credentials-file: /home/YOUR_USER/.cloudflared/YOUR_TUNNEL_UUID.json
+
+ingress:
+  - hostname: deploy.yourdomain.com
+    service: http://127.0.0.1:9000
+  - service: http_status:404
