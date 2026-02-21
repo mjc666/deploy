@@ -1,0 +1,13 @@
+{
+  "projects": {
+    "my-project": {
+      "path": "/home/YOUR_USER/Projects/my-project",
+      "branch": "main",
+      "steps": [
+        "git pull origin main",
+        "npm install --production",
+        "pm2 restart my-project"
+      ]
+    }
+  }
+}

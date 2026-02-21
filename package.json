@@ -1,0 +1,19 @@
+{
+  "name": "deploy",
+  "version": "1.0.0",
+  "description": "GitHub webhook auto-deploy service",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "deploy",
+    "webhook",
+    "github"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "express": "^4.21.0"
+  }
+}
