@@ -68,10 +68,12 @@ function deploy(project, projectConfig) {
   log('Deploy complete');
 }
 
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+app.post('/webhook', express.json({
+  verify: (req, res, buf) => { req.rawBody = buf; }
+}), (req, res) => {
   const signature = req.headers['x-hub-signature-256'];
 
-  if (!verifySignature(req.body, signature)) {
+  if (!verifySignature(req.rawBody, signature)) {
     console.log('Invalid webhook signature');
     return res.status(401).send('Invalid signature');
   }
@@ -81,7 +83,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
     return res.status(200).send('Ignored event: ' + event);
   }
 
-  const payload = JSON.parse(req.body);
+  const payload = req.body;
   const repoName = payload.repository.name;
   const branch = payload.ref.replace('refs/heads/', '');
 
