@@ -68,39 +68,42 @@ function deploy(project, projectConfig) {
   log('Deploy complete');
 }
 
-app.post('/webhook', express.json({
-  verify: (req, res, buf) => { req.rawBody = buf; }
-}), (req, res) => {
-  const signature = req.headers['x-hub-signature-256'];
+app.post('/webhook', (req, res) => {
+  const chunks = [];
+  req.on('data', chunk => chunks.push(chunk));
+  req.on('end', () => {
+    const rawBody = Buffer.concat(chunks);
+    const signature = req.headers['x-hub-signature-256'];
 
-  if (!verifySignature(req.rawBody, signature)) {
-    console.log('Invalid webhook signature');
-    return res.status(401).send('Invalid signature');
-  }
+    if (!verifySignature(rawBody, signature)) {
+      console.log('Invalid webhook signature');
+      return res.status(401).send('Invalid signature');
+    }
 
-  const event = req.headers['x-github-event'];
-  if (event !== 'push') {
-    return res.status(200).send('Ignored event: ' + event);
-  }
+    const event = req.headers['x-github-event'];
+    if (event !== 'push') {
+      return res.status(200).send('Ignored event: ' + event);
+    }
 
-  const payload = req.body;
-  const repoName = payload.repository.name;
-  const branch = payload.ref.replace('refs/heads/', '');
+    const payload = JSON.parse(rawBody);
+    const repoName = payload.repository.name;
+    const branch = payload.ref.replace('refs/heads/', '');
 
-  const projectConfig = config.projects[repoName];
-  if (!projectConfig) {
-    console.log(`No config found for repo: ${repoName}`);
-    return res.status(200).send('No config for repo: ' + repoName);
-  }
+    const projectConfig = config.projects[repoName];
+    if (!projectConfig) {
+      console.log(`No config found for repo: ${repoName}`);
+      return res.status(200).send('No config for repo: ' + repoName);
+    }
 
-  if (branch !== projectConfig.branch) {
-    console.log(`Ignoring push to ${branch} (configured: ${projectConfig.branch})`);
-    return res.status(200).send('Ignored branch: ' + branch);
-  }
+    if (branch !== projectConfig.branch) {
+      console.log(`Ignoring push to ${branch} (configured: ${projectConfig.branch})`);
+      return res.status(200).send('Ignored branch: ' + branch);
+    }
 
-  res.status(200).send('Deploying ' + repoName);
+    res.status(200).send('Deploying ' + repoName);
 
-  setImmediate(() => deploy(repoName, projectConfig));
+    setImmediate(() => deploy(repoName, projectConfig));
+  });
 });
 
 app.get('/health', (req, res) => {
