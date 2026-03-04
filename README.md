@@ -80,12 +80,46 @@ See [cloudflared-config.example.yml](cloudflared-config.example.yml) for details
 
 ### 5. Start the server
 
-```bash
-# With pm2
+For production, use a process manager.
+
+#### Option 1: systemd (Recommended)
+
+systemd is the standard way to manage services on Linux. A template service file is provided in `systemd/deploy.service`.
+
+1. Edit `systemd/deploy.service` and update:
+   - `User` and `Group` (e.g., your login username)
+   - `WorkingDirectory` (absolute path to this directory)
+   - `ExecStart` (absolute path to `node`, usually `/usr/bin/node`)
+
+2. Install and enable the service:
+
+```sh
+sudo cp systemd/deploy.service /etc/systemd/system/deploy.service
+sudo systemctl daemon-reload
+sudo systemctl enable deploy
+sudo systemctl start deploy
+```
+
+3. Manage the service:
+
+```sh
+sudo systemctl status deploy
+sudo journalctl -u deploy -f  # View logs
+```
+
+#### Option 2: PM2
+
+If you prefer PM2:
+
+```sh
 pm2 start server.js --name deploy
 pm2 save
+pm2 startup   # Follow the instructions to enable on boot
+```
 
-# Or directly
+Or for testing:
+
+```bash
 npm start
 ```
 
