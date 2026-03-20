@@ -4,7 +4,8 @@
   "description": "GitHub webhook auto-deploy service",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test-webhook": "node test/test-webhook.js"
   },
   "keywords": [
     "deploy",
