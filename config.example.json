@@ -10,13 +10,13 @@
         "pm2 restart your-project"
       ]
     },
-    "type1-monitor": {
-      "path": "/srv/type1-monitor",
+    "generic-web-app": {
+      "path": "/srv/your-app-path",
       "branch": "master",
       "steps": [
         "git pull origin master",
         "cd frontend && npm install && npm run build",
-        "systemctl --user restart type1-monitor"
+        "systemctl --user restart your-app-service"
       ]
     }
   }
