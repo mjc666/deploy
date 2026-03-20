@@ -1,12 +1,22 @@
 {
   "projects": {
-    "my-project": {
-      "path": "/home/YOUR_USER/Projects/my-project",
-      "branch": "main",
+    "your-project": {
+      "path": "/path/to/your-project",
+      "branch": "master",
       "steps": [
-        "git pull origin main",
-        "npm install --production",
-        "pm2 restart my-project"
+        "git pull origin master",
+        "npm install",
+        "npm run build",
+        "pm2 restart your-project"
+      ]
+    },
+    "type1-monitor": {
+      "path": "/srv/type1-monitor",
+      "branch": "master",
+      "steps": [
+        "git pull origin master",
+        "cd frontend && npm install && npm run build",
+        "systemctl --user restart type1-monitor"
       ]
     }
   }
